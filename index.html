@@ -50,6 +50,72 @@
       outline-offset: 2px;
     }
 
+    .store-status-banner {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 17px 22px;
+      color: #fff;
+      background: #8f3f35;
+      box-shadow: 0 8px 22px rgba(59, 42, 35, 0.2);
+      text-align: center;
+      font-size: clamp(17px, 2.4vw, 22px);
+      font-weight: 900;
+    }
+
+    body.store-closed .store-status-banner { display: block; }
+    body.store-closed .menu-card,
+    body.store-closed .building-btn,
+    body.store-closed .room-input,
+    body.store-closed .request-input,
+    body.store-closed .clear-btn,
+    body.store-closed .qty-btn,
+    body.store-closed .delete-btn,
+    body.store-closed .copy-btn {
+      pointer-events: none;
+      opacity: 0.5;
+      filter: grayscale(0.35);
+    }
+
+    .store-closed-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(45, 31, 26, 0.58);
+      backdrop-filter: blur(5px);
+    }
+
+    .store-closed-modal[hidden] { display: none; }
+
+    .store-closed-dialog {
+      width: min(480px, 100%);
+      padding: 38px 28px 28px;
+      border: 3px solid rgba(201, 120, 106, 0.35);
+      border-radius: 25px;
+      background: #fffdf8;
+      box-shadow: 0 25px 70px rgba(45, 31, 26, 0.3);
+      text-align: center;
+    }
+
+    .store-closed-dialog .closed-icon { display: block; margin-bottom: 13px; font-size: 50px; }
+    .store-closed-dialog h2 { margin: 0; font-size: clamp(24px, 5.5vw, 34px); line-height: 1.35; }
+    .store-closed-dialog button {
+      width: 100%;
+      margin-top: 27px;
+      padding: 16px;
+      border: 0;
+      border-radius: 13px;
+      color: #fff;
+      background: var(--coral-deep);
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
     .site-header {
       position: relative;
       overflow: hidden;
@@ -239,6 +305,23 @@
       grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 13px;
     }
+
+    .all-category-title {
+      grid-column: 1 / -1;
+      margin: 23px 0 3px;
+      padding: 17px 20px;
+      border-left: 8px solid var(--coral-deep);
+      border-radius: 13px;
+      color: var(--mocha);
+      background: linear-gradient(90deg, #f8dfd5 0%, #fff5ee 70%, rgba(255, 253, 248, 0.45) 100%);
+      box-shadow: 0 8px 20px rgba(184, 95, 82, 0.1);
+      font-size: 31px;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+    }
+
+    .all-category-title:first-child { margin-top: 3px; }
 
     .menu-card {
       position: relative;
@@ -540,8 +623,8 @@
 
     .total-box {
       margin-top: 18px;
-      min-height: 150px;
-      padding: 19px;
+      min-height: 205px;
+      padding: 23px;
       border: 1px solid var(--line);
       border-radius: 15px;
       background: linear-gradient(135deg, #fffaf4, #fff);
@@ -552,16 +635,15 @@
     .total-price { color: var(--coral-deep); font-size: 27px; font-weight: 950; letter-spacing: -0.04em; }
     .total-selection-summary {
       display: grid;
-      gap: 6px;
-      max-height: 145px;
-      margin-top: 12px;
-      padding: 11px 12px;
-      overflow-y: auto;
+      gap: 8px;
+      min-height: 74px;
+      margin-top: 15px;
+      padding: 14px 15px;
       border: 1px solid var(--line);
       border-radius: 11px;
       color: var(--muted);
       background: rgba(255,255,255,.72);
-      font-size: 13px;
+      font-size: 15px;
       line-height: 1.45;
     }
     .total-summary-item { display: flex; justify-content: space-between; gap: 12px; }
@@ -593,11 +675,12 @@
       bottom: 14px;
       left: auto;
       display: flex;
-      width: min(340px, calc(100% - 28px));
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 13px 16px;
+      width: min(330px, calc(100% - 28px));
+      max-height: 150px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 5px;
+      padding: 10px 12px;
       border: 1px solid rgba(255, 255, 255, 0.26);
       border-radius: 14px;
       color: #fff;
@@ -605,11 +688,24 @@
       box-shadow: 0 14px 36px rgba(59, 42, 35, 0.28);
       backdrop-filter: blur(12px);
       cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
 
-    .mobile-total small { display: block; margin-bottom: 2px; opacity: 0.75; font-size: 10px; }
-    .mobile-total strong { font-size: 19px; }
-    .mobile-total span:last-child { font-size: 13px; font-weight: 800; }
+    body.order-panel-in-view .mobile-total {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(125%);
+    }
+
+    .mobile-total-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .mobile-total small { display: block; margin-bottom: 1px; opacity: 0.75; font-size: 10px; }
+    .mobile-total strong { font-size: 20px; }
+    .mobile-total-action { font-size: 13px; font-weight: 900; }
+    .mobile-total-summary { display: grid; gap: 3px; max-height: 48px; padding-top: 5px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,.22); }
+    .mobile-total-summary-item { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; line-height: 1.25; text-align: left; }
+    .mobile-total-summary-item span:first-child { min-width: 0; overflow-wrap: anywhere; }
+    .mobile-total-summary-item b { flex: 0 0 auto; color: #ffd5c7; }
+    .event-phone-label { color: var(--coral-deep); font-size: 15px; font-weight: 900; line-height: 1.5; }
 
     .toast {
       position: fixed;
@@ -644,7 +740,7 @@
       .menu-panel { padding: 13px; border-radius: 19px; }
       .order-panel { margin-top: 14px; padding: 19px; }
       .cart-list { max-height: none; }
-      .mobile-total { left: 14px; width: auto; }
+      .mobile-total { left: auto; width: min(300px, calc(100% - 28px)); }
     }
 
     @media (max-width: 560px) {
@@ -661,6 +757,7 @@
       .tab { min-width: 94px; min-height: 49px; padding: 12px 14px; font-size: 15px; }
       .helper-text { margin-block: 14px 12px; font-size: 12px; }
       .menu-grid { gap: 9px; }
+      .all-category-title { margin-top: 18px; padding: 14px 16px; border-left-width: 7px; font-size: 25px; }
       .menu-card { min-height: 106px; padding: 13px; border-radius: 14px; }
       .menu-name { font-size: 16px; }
       .menu-price { font-size: 15px; }
@@ -688,6 +785,7 @@
   </style>
 </head>
 <body>
+  <div id="storeStatusBanner" class="store-status-banner" role="status">오늘은 영업마감 되었습니다. 내일 다시 뵙겠습니다^^</div>
   <header class="site-header">
     <div class="header-inner">
       <div class="brand">
@@ -761,6 +859,11 @@
         <textarea id="requestText" class="request-input" placeholder="메뉴 추가 내용이나 요청사항을 적어주세요."></textarea>
       </div>
 
+      <div class="field-group">
+        <label class="field-label event-phone-label" for="eventPhone">프렌치커피 ▶이벤트알림◀에 동의하시면 휴대폰 번호를 입력해 주세요^ㅡ^</label>
+        <input id="eventPhone" class="room-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="010-0000-0000">
+      </div>
+
       <div class="total-box">
         <div class="total-line">
           <span class="total-label">총 합계</span>
@@ -785,10 +888,18 @@
   </main>
 
   <button id="mobileTotal" class="mobile-total" type="button" aria-label="주문 내역으로 이동">
-    <span><small>총 합계</small><strong id="mobileTotalPrice">0원</strong></span>
-    <span>주문하기 ↓</span>
+    <span class="mobile-total-head"><span><small>총 합계</small><strong id="mobileTotalPrice">0원</strong></span><span class="mobile-total-action">주문하기 ↓</span></span>
+    <span id="mobileTotalSummary" class="mobile-total-summary">선택한 메뉴가 없습니다.</span>
   </button>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="storeClosedModal" class="store-closed-modal" role="dialog" aria-modal="true" aria-labelledby="storeClosedTitle" hidden>
+    <div class="store-closed-dialog">
+      <span class="closed-icon" aria-hidden="true">☕</span>
+      <h2 id="storeClosedTitle">오늘은 영업마감 되었습니다.<br>내일 다시 뵙겠습니다^^</h2>
+      <button id="storeClosedConfirm" type="button">확인</button>
+    </div>
+  </div>
 
   <script>
     // 가격은 원 단위입니다. 사진에서 가려진 군만두·떡볶이는 2,500원으로 임시 반영했습니다.
@@ -853,18 +964,20 @@
       { id: 'misugaru', category: 'dessert', name: '미숫가루', price: 3500, tag: 'BENTO' }
     ];
 
-    const state = { category: 'all', building: '르네관', cart: new Map() };
+    const state = { category: 'all', building: '르네관', cart: new Map(), storeOpen: true };
     const menuGrid = document.getElementById('menuGrid');
     const cartList = document.getElementById('cartList');
     const orderCount = document.getElementById('orderCount');
     const totalPrice = document.getElementById('totalPrice');
     const totalSelectionSummary = document.getElementById('totalSelectionSummary');
     const mobileTotalPrice = document.getElementById('mobileTotalPrice');
+    const mobileTotalSummary = document.getElementById('mobileTotalSummary');
     const clearCart = document.getElementById('clearCart');
     const orderButton = document.getElementById('orderButton');
     const toast = document.getElementById('toast');
     const orderCompletePanel = document.getElementById('orderCompletePanel');
     const printReceipt = document.getElementById('printReceipt');
+    const storeClosedModal = document.getElementById('storeClosedModal');
     // 전화번호를 바꾸려면 아래 값만 수정하면 됩니다.
     const OWNER_PHONE = '010-9871-1250';
     let toastTimer;
@@ -876,6 +989,7 @@
          예: const alarm = new Audio('order-alarm.mp3'); alarm.play();
     */
     const ORDER_API_URL = 'https://coffee-order-api.anwlrocnfwkd.workers.dev/api/orders';
+    const STORE_STATUS_API_URL = 'https://coffee-order-api.anwlrocnfwkd.workers.dev/api/store-status';
 
     const won = value => value.toLocaleString('ko-KR') + '원';
 
@@ -885,9 +999,16 @@
       return '';
     }
 
-    function renderMenu() {
-      const items = state.category === 'all' ? MENU : MENU.filter(item => item.category === state.category);
-      menuGrid.innerHTML = items.map(item => {
+    const ALL_CATEGORY_GROUPS = [
+      { id: 'coffee', label: '커피' },
+      { id: 'toast', label: '토스트' },
+      { id: 'dessert', label: '분식' },
+      { id: 'smoothie', label: '스무디' },
+      { id: 'drink', label: '주스·에이드' },
+      { id: 'tea', label: '허브티' }
+    ];
+
+    function menuCardHtml(item) {
         const temperatureButtons = item.temperatures ? `
           <span class="temperature-options" aria-label="${item.name} 온도 선택">
             <button class="temperature-btn" type="button" data-id="${item.id}" data-temperature="HOT"><span class="temp-check">□</span> HOT ${won(item.temperatures.HOT)}</button>
@@ -906,7 +1027,17 @@
             <span class="add-symbol" aria-hidden="true">+</span>
           </span>`}
         </article>`;
-      }).join('');
+    }
+
+    function renderMenu() {
+      if (state.category === 'all') {
+        menuGrid.innerHTML = ALL_CATEGORY_GROUPS.map(group => {
+          const cards = MENU.filter(item => item.category === group.id).map(menuCardHtml).join('');
+          return `<h2 class="all-category-title">${group.label}</h2>${cards}`;
+        }).join('');
+      } else {
+        menuGrid.innerHTML = MENU.filter(item => item.category === state.category).map(menuCardHtml).join('');
+      }
       updateMenuSelection();
     }
 
@@ -926,6 +1057,10 @@
     }
 
     function addItem(id, card, temperature = '') {
+      if (!state.storeOpen) {
+        showClosedPopup();
+        return;
+      }
       const item = MENU.find(menu => menu.id === id);
       if (!item) return;
       if (item.temperatures && !temperature) {
@@ -996,8 +1131,11 @@
           <strong>${won(item.price * item.qty)}</strong>
         </div>
       `).join('') : '선택한 메뉴가 없습니다.';
+      mobileTotalSummary.innerHTML = items.length ? items.map(item => `
+        <span class="mobile-total-summary-item"><span>${item.name} × ${item.qty}</span><b>${won(item.price * item.qty)}</b></span>
+      `).join('') : '선택한 메뉴가 없습니다.';
       clearCart.hidden = items.length === 0;
-      orderButton.disabled = items.length === 0;
+      orderButton.disabled = items.length === 0 || !state.storeOpen;
 
       if (!items.length) {
         cartList.innerHTML = '<div class="empty-cart"><span>선택한 메뉴가 없습니다.<br>왼쪽 메뉴를 눌러 담아주세요.</span></div>';
@@ -1051,6 +1189,7 @@
     function buildOrderPayload() {
       const room = document.getElementById('roomNumber').value.trim();
       const request = document.getElementById('requestText').value.trim();
+      const phone = document.getElementById('eventPhone').value.trim();
       const items = [...state.cart.values()].map(item => ({
         id: item.id,
         name: item.name,
@@ -1063,6 +1202,7 @@
         building: state.building,
         room,
         request,
+        phone,
         items,
         total: items.reduce((sum, item) => sum + item.subtotal, 0),
         orderedAt: new Date().toISOString(),
@@ -1086,8 +1226,47 @@
         body: JSON.stringify(payload)
       });
 
-      if (!response.ok) throw new Error('주문 전송 실패');
+      if (!response.ok) {
+        let errorData = {};
+        try { errorData = await response.json(); } catch (_) {}
+        if (response.status === 409 || response.status === 403 || errorData.code === 'STORE_CLOSED') {
+          applyStoreStatus(false, true);
+          const closedError = new Error('영업 마감');
+          closedError.code = 'STORE_CLOSED';
+          throw closedError;
+        }
+        throw new Error('주문 전송 실패');
+      }
       showToast('주문이 접수되었습니다');
+    }
+
+    function showClosedPopup() {
+      storeClosedModal.hidden = false;
+      document.getElementById('storeClosedConfirm').focus();
+    }
+
+    function applyStoreStatus(isOpen, showPopup = false) {
+      const wasOpen = state.storeOpen;
+      state.storeOpen = Boolean(isOpen);
+      document.body.classList.toggle('store-closed', !state.storeOpen);
+      document.querySelectorAll('#roomNumber, #requestText, #eventPhone, .building-btn').forEach(element => {
+        element.disabled = !state.storeOpen;
+      });
+      if (!state.storeOpen && (showPopup || wasOpen)) showClosedPopup();
+      if (state.storeOpen) storeClosedModal.hidden = true;
+      renderCart();
+    }
+
+    async function refreshStoreStatus(showPopup = false) {
+      try {
+        const response = await fetch(STORE_STATUS_API_URL, { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+        const isOpen = typeof data.is_open === 'boolean' ? data.is_open : data.isOpen;
+        if (typeof isOpen === 'boolean') applyStoreStatus(isOpen, showPopup);
+      } catch (error) {
+        console.warn('영업 상태를 확인하지 못했습니다.', error);
+      }
     }
 
     function showOrderCompletion(payload) {
@@ -1151,6 +1330,10 @@
     });
 
     orderButton.addEventListener('click', async () => {
+      if (!state.storeOpen) {
+        showClosedPopup();
+        return;
+      }
       const payload = buildOrderPayload();
       if (!payload.room) {
         document.getElementById('roomNumber').focus();
@@ -1166,16 +1349,28 @@
         state.cart.clear();
         renderCart();
       } catch (error) {
-        showToast('주문 전송에 실패했습니다');
+        if (error && error.code === 'STORE_CLOSED') showToast('오늘 영업이 마감되었습니다');
+        else showToast('주문 전송에 실패했습니다');
       } finally {
-        orderButton.disabled = state.cart.size === 0;
+        orderButton.disabled = state.cart.size === 0 || !state.storeOpen;
         orderButton.textContent = '주문하기';
       }
+    });
+
+    document.getElementById('storeClosedConfirm').addEventListener('click', () => {
+      storeClosedModal.hidden = true;
     });
 
     document.getElementById('mobileTotal').addEventListener('click', () => {
       window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
     });
+
+    if ('IntersectionObserver' in window) {
+      const orderButtonObserver = new IntersectionObserver(entries => {
+        document.body.classList.toggle('order-panel-in-view', entries.some(entry => entry.isIntersecting));
+      }, { threshold: 0.15 });
+      orderButtonObserver.observe(document.getElementById('orderButton'));
+    }
 
     document.getElementById('printOrderButton').addEventListener('click', event => {
       printReceipt.hidden = !printReceipt.hidden;
@@ -1184,6 +1379,8 @@
 
     renderMenu();
     renderCart();
+    refreshStoreStatus(true);
+    setInterval(() => refreshStoreStatus(false), 10000);
   </script>
 </body>
 </html>
