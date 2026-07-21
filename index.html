@@ -487,6 +487,7 @@
       overflow: hidden;
       margin-top: 22px;
       padding: 23px;
+      border-width: 3px;
     }
 
     .delivery-fields {
@@ -667,6 +668,7 @@
     .copy-btn:hover { transform: translateY(-1px); box-shadow: 0 13px 28px rgba(59, 42, 35, 0.23); }
     .copy-btn:active { transform: translateY(0); }
     .copy-btn:disabled { cursor: not-allowed; opacity: 0.45; transform: none; box-shadow: none; }
+    .delivery-order-hint { margin: 8px 0 0; color: var(--espresso); text-align: center; font-size: 13px; font-weight: 900; }
 
     .mobile-total {
       position: fixed;
@@ -700,7 +702,7 @@
     .mobile-total-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
     .mobile-total small { display: block; margin-bottom: 1px; opacity: 0.75; font-size: 10px; }
     .mobile-total strong { font-size: 20px; }
-    .mobile-total-action { font-size: 13px; font-weight: 900; }
+    .mobile-total-action { font-size: 20px; font-weight: 900; }
     .mobile-total-summary { display: grid; gap: 3px; max-height: 48px; padding-top: 5px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,.22); }
     .mobile-total-summary-item { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; line-height: 1.25; text-align: left; }
     .mobile-total-summary-item span:first-child { min-width: 0; overflow-wrap: anywhere; }
@@ -871,6 +873,7 @@
         </div>
         <div id="totalSelectionSummary" class="total-selection-summary">선택한 메뉴가 없습니다.</div>
         <button id="orderButton" class="copy-btn" type="button" disabled>주문하기</button>
+        <p class="delivery-order-hint">배달을 원하시는 동/호수를 입력해 주세요</p>
       </div>
 
       <section id="orderCompletePanel" class="order-complete-panel" hidden aria-live="polite">
