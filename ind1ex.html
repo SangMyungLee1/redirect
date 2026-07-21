@@ -1,0 +1,1392 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#c9786a">
+  <title>FRENCH COFFEE 메뉴판</title>
+  <style>
+    :root {
+      --cream: #f7f1e8;
+      --paper: #fffdf8;
+      --paper-strong: #ffffff;
+      --coral: #c9786a;
+      --coral-deep: #b85f52;
+      --coral-pale: #f0d5ce;
+      --espresso: #3b2a23;
+      --mocha: #6f574b;
+      --muted: #8c766b;
+      --line: #e7d9cb;
+      --sage: #8d9a7b;
+      --shadow: 0 18px 50px rgba(59, 42, 35, 0.09);
+      --radius-lg: 24px;
+      --radius-md: 17px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      color: var(--espresso);
+      background:
+        radial-gradient(circle at 8% 4%, rgba(201, 120, 106, 0.10), transparent 23rem),
+        radial-gradient(circle at 95% 10%, rgba(141, 154, 123, 0.09), transparent 22rem),
+        var(--cream);
+      font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      word-break: keep-all;
+    }
+
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid rgba(201, 120, 106, 0.27);
+      outline-offset: 2px;
+    }
+
+    .store-status-banner {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      padding: 17px 22px;
+      color: #fff;
+      background: #8f3f35;
+      box-shadow: 0 8px 22px rgba(59, 42, 35, 0.2);
+      text-align: center;
+      font-size: clamp(17px, 2.4vw, 22px);
+      font-weight: 900;
+    }
+
+    body.store-closed .store-status-banner { display: block; }
+    body.store-closed .menu-card,
+    body.store-closed .building-btn,
+    body.store-closed .room-input,
+    body.store-closed .request-input,
+    body.store-closed .clear-btn,
+    body.store-closed .qty-btn,
+    body.store-closed .delete-btn,
+    body.store-closed .copy-btn {
+      pointer-events: none;
+      opacity: 0.5;
+      filter: grayscale(0.35);
+    }
+
+    .store-closed-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: grid;
+      place-items: center;
+      padding: 22px;
+      background: rgba(45, 31, 26, 0.58);
+      backdrop-filter: blur(5px);
+    }
+
+    .store-closed-modal[hidden] { display: none; }
+
+    .store-closed-dialog {
+      width: min(480px, 100%);
+      padding: 38px 28px 28px;
+      border: 3px solid rgba(201, 120, 106, 0.35);
+      border-radius: 25px;
+      background: #fffdf8;
+      box-shadow: 0 25px 70px rgba(45, 31, 26, 0.3);
+      text-align: center;
+    }
+
+    .store-closed-dialog .closed-icon { display: block; margin-bottom: 13px; font-size: 50px; }
+    .store-closed-dialog h2 { margin: 0; font-size: clamp(24px, 5.5vw, 34px); line-height: 1.35; }
+    .store-closed-dialog button {
+      width: 100%;
+      margin-top: 27px;
+      padding: 16px;
+      border: 0;
+      border-radius: 13px;
+      color: #fff;
+      background: var(--coral-deep);
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 900;
+    }
+
+    .site-header {
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(231, 217, 203, 0.9);
+      background: rgba(255, 253, 248, 0.78);
+      backdrop-filter: blur(14px);
+    }
+
+    .site-header::before,
+    .site-header::after {
+      position: absolute;
+      border: 2px solid rgba(201, 120, 106, 0.14);
+      border-radius: 55% 45% 60% 40%;
+      content: "";
+      transform: rotate(36deg);
+    }
+
+    .site-header::before { width: 46px; height: 70px; right: 9%; top: -13px; }
+    .site-header::after { width: 30px; height: 48px; right: 5%; bottom: -16px; }
+
+    .header-inner {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 28px;
+      width: min(1500px, calc(100% - 48px));
+      margin: 0 auto;
+      padding: 30px 0 28px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 18px; }
+
+    .brand-mark {
+      display: grid;
+      width: 68px;
+      height: 68px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: var(--paper);
+      box-shadow: 0 10px 30px rgba(59, 42, 35, 0.08);
+      font-size: 34px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(31px, 3.2vw, 54px);
+      font-weight: 900;
+      letter-spacing: 0.025em;
+      line-height: 1;
+    }
+
+    .brand p { margin: 9px 0 0; color: var(--muted); font-size: 16px; font-weight: 600; }
+
+    .header-guide {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 20px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--coral), #df826f);
+      box-shadow: 0 12px 28px rgba(201, 120, 106, 0.2);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .layout {
+      display: block;
+      width: min(1280px, calc(100% - 48px));
+      margin: 24px auto 60px;
+    }
+
+    .menu-panel,
+    .order-panel {
+      border: 1px solid rgba(231, 217, 203, 0.95);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 253, 248, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .menu-panel { min-width: 0; padding: 22px; }
+
+    .category-tabs {
+      display: flex;
+      gap: 7px;
+      overflow-x: auto;
+      padding: 6px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.62);
+      scrollbar-width: none;
+    }
+
+    .category-tabs::-webkit-scrollbar { display: none; }
+
+    /* 아래 EVENT 글자만 수정해서 사용하시면 됩니다. */
+    .event-banner {
+      position: relative;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 18px;
+      overflow: hidden;
+      margin-bottom: 17px;
+      padding: 20px 23px;
+      border: 2px solid rgba(184, 95, 82, 0.32);
+      border-radius: 18px;
+      color: #fff;
+      background: linear-gradient(115deg, #b85f52 0%, #d87b68 56%, #e99b72 100%);
+      box-shadow: 0 14px 32px rgba(184, 95, 82, 0.22);
+    }
+
+    .event-banner::after {
+      position: absolute;
+      right: -26px;
+      width: 116px;
+      height: 116px;
+      border: 18px solid rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .event-label {
+      position: relative;
+      z-index: 1;
+      padding: 8px 13px;
+      border-radius: 999px;
+      color: var(--coral-deep);
+      background: #fff8ed;
+      font-size: 16px;
+      font-weight: 950;
+      letter-spacing: 0.08em;
+    }
+
+    .event-copy { position: relative; z-index: 1; }
+    .event-copy strong { display: block; font-size: 22px; font-weight: 950; line-height: 1.3; }
+    .event-copy p { margin: 5px 0 0; color: rgba(255, 255, 255, 0.86); font-size: 14px; font-weight: 650; }
+    .event-icon { position: relative; z-index: 1; font-size: 35px; }
+
+    .tab {
+      flex: 1 0 auto;
+      min-width: 112px;
+      min-height: 56px;
+      padding: 15px 18px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--mocha);
+      cursor: pointer;
+      font-size: 18px;
+      font-weight: 800;
+      transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+    }
+
+    .tab:hover { background: var(--coral-pale); }
+    .tab:active { transform: scale(0.98); }
+    .tab.active { color: #fff; background: var(--coral); }
+
+    .helper-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 18px 3px 15px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .helper-icon {
+      display: inline-grid;
+      width: 21px;
+      height: 21px;
+      place-items: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: #fff;
+      color: var(--coral-deep);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .all-category-title {
+      grid-column: 1 / -1;
+      margin: 23px 0 3px;
+      padding: 17px 20px;
+      border-left: 8px solid var(--coral-deep);
+      border-radius: 13px;
+      color: var(--mocha);
+      background: linear-gradient(90deg, #f8dfd5 0%, #fff5ee 70%, rgba(255, 253, 248, 0.45) 100%);
+      box-shadow: 0 8px 20px rgba(184, 95, 82, 0.1);
+      font-size: 31px;
+      font-weight: 950;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+    }
+
+    .all-category-title:first-child { margin-top: 3px; }
+
+    .menu-card {
+      position: relative;
+      display: flex;
+      min-height: 118px;
+      flex-direction: column;
+      align-items: stretch;
+      justify-content: space-between;
+      gap: 13px;
+      padding: 17px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.98), rgba(255, 250, 243, 0.92));
+      cursor: pointer;
+      text-align: left;
+      box-shadow: 0 7px 18px rgba(59, 42, 35, 0.035);
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .menu-card:hover {
+      z-index: 1;
+      border-color: rgba(201, 120, 106, 0.66);
+      box-shadow: 0 13px 28px rgba(59, 42, 35, 0.09);
+      transform: translateY(-3px);
+    }
+
+    .menu-card:active { transform: translateY(0) scale(0.985); }
+
+    .menu-card.added {
+      animation: added 0.35s ease;
+      border-color: var(--coral);
+      background: #fff8f5;
+    }
+
+    .menu-card.selected {
+      border: 3px solid var(--coral-deep);
+      background: linear-gradient(145deg, #fff0eb, #ffe2d8);
+      box-shadow: 0 14px 34px rgba(184, 95, 82, 0.28);
+      transform: translateY(-3px);
+    }
+
+    .menu-cancel-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 3;
+      display: none;
+      width: 31px;
+      height: 31px;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--coral-deep);
+      box-shadow: 0 5px 13px rgba(114, 45, 37, 0.28);
+      font-size: 23px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .menu-card.selected .menu-cancel-btn { display: flex; }
+    .menu-card.selected .card-top { padding-right: 34px; }
+    .menu-cancel-btn:active { transform: scale(0.9); }
+
+    @keyframes added {
+      0% { transform: scale(1); }
+      45% { transform: scale(0.965); }
+      100% { transform: scale(1); }
+    }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .menu-name { font-size: 18px; font-weight: 800; line-height: 1.35; }
+
+    .menu-tag {
+      flex: 0 0 auto;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: var(--coral-pale);
+      color: var(--coral-deep);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+    }
+
+    .menu-tag.ice { color: #5e6955; background: #e8ecdf; }
+    .menu-tag.food { color: #775a36; background: #f3e4c7; }
+
+    .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .menu-price { font-size: 17px; font-weight: 900; letter-spacing: -0.02em; }
+
+    .add-symbol {
+      display: grid;
+      width: 31px;
+      height: 31px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1.5px solid var(--coral);
+      border-radius: 50%;
+      color: var(--coral-deep);
+      background: #fff;
+      font-size: 22px;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    .temperature-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .temperature-btn {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--espresso);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .temperature-btn:hover { border-color: var(--coral); background: #fff8f5; }
+    .temperature-btn.ice { color: #53634a; background: #f3f7ed; }
+    .temp-check { margin-right: 3px; font-size: 15px; font-weight: 950; }
+    .temperature-btn.selected { color: #fff; border-color: var(--coral-deep); background: var(--coral-deep); box-shadow: 0 4px 12px rgba(184, 95, 82, 0.28); }
+    .temperature-btn.ice.selected { color: #fff; border-color: #607257; background: #607257; }
+
+    .order-complete-panel {
+      margin-top: 18px;
+      padding: 20px;
+      border: 3px solid var(--coral);
+      border-radius: 18px;
+      background: linear-gradient(145deg, #fff5ef, #ffe7dc);
+      box-shadow: 0 14px 34px rgba(184, 95, 82, 0.22);
+    }
+    .order-complete-panel[hidden] { display: none; }
+    .order-complete-title { margin: 0 0 14px; color: var(--coral-deep); font-size: 22px; font-weight: 950; }
+    .complete-actions { display: grid; gap: 10px; }
+    .receipt-print-btn, .owner-call-btn {
+      display: grid;
+      min-height: 58px;
+      place-items: center;
+      border: 0;
+      border-radius: 13px;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 950;
+    }
+    .receipt-print-btn { color: #fff; background: var(--coral-deep); box-shadow: 0 8px 20px rgba(184, 95, 82, 0.3); }
+    .owner-call-btn { color: #fff; background: var(--espresso); }
+    .owner-call-btn small { display: block; color: rgba(255,255,255,.78); font-size: 12px; font-weight: 650; }
+    .print-receipt { margin-top: 16px; padding: 16px; border: 1px dashed var(--line); border-radius: 12px; background: #fff; white-space: pre-wrap; line-height: 1.75; }
+    .print-receipt[hidden] { display: none; }
+
+    .order-panel {
+      overflow: hidden;
+      margin-top: 22px;
+      padding: 23px;
+      border-width: 3px;
+      border-color: var(--coral);
+    }
+
+    .delivery-fields {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .order-heading {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 15px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .order-heading h2 { margin: 0; font-size: 27px; font-weight: 900; }
+    .order-count { color: var(--coral-deep); font-size: 13px; font-weight: 800; }
+
+    .field-group { margin-top: 17px; }
+    .field-label { display: block; margin: 0 0 8px; font-size: 14px; font-weight: 850; }
+
+    .building-switch {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      border: 1px solid rgba(201, 120, 106, 0.45);
+      border-radius: 13px;
+    }
+
+    .building-btn {
+      padding: 12px;
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 850;
+      transition: background 0.18s ease, color 0.18s ease;
+    }
+
+    .building-btn + .building-btn { border-left: 1px solid rgba(201, 120, 106, 0.33); }
+    .building-btn.active { color: #fff; background: var(--coral); }
+
+    .room-input,
+    .request-input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--espresso);
+      background: #fff;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .room-input { height: 48px; padding: 0 14px; }
+    .request-input { min-height: 68px; resize: vertical; padding: 12px 14px; line-height: 1.5; }
+    .room-input::placeholder, .request-input::placeholder { color: #b6a69e; }
+    .room-input:focus, .request-input:focus { border-color: var(--coral); box-shadow: 0 0 0 3px rgba(201, 120, 106, 0.10); }
+
+    .selected-section { margin-top: 19px; padding-top: 18px; border-top: 1px dashed #d8c3b5; }
+    .selected-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .selected-title-row h3 { margin: 0; font-size: 15px; font-weight: 900; }
+
+    .clear-btn {
+      padding: 5px 8px;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .clear-btn:hover { color: var(--coral-deep); }
+
+    .cart-list {
+      display: flex;
+      max-height: min(36vh, 330px);
+      flex-direction: column;
+      gap: 9px;
+      overflow-y: auto;
+      margin-top: 11px;
+      padding-right: 3px;
+      scrollbar-color: var(--coral-pale) transparent;
+      scrollbar-width: thin;
+    }
+
+    .empty-cart {
+      display: grid;
+      min-height: 110px;
+      place-items: center;
+      border: 1px dashed var(--line);
+      border-radius: 14px;
+      color: var(--muted);
+      background: rgba(247, 241, 232, 0.45);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 9px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+    }
+
+    .cart-name { overflow: hidden; font-size: 14px; font-weight: 850; text-overflow: ellipsis; white-space: nowrap; }
+    .cart-subtotal { margin-top: 3px; color: var(--muted); font-size: 12px; font-weight: 650; }
+    .cart-actions { display: flex; align-items: center; gap: 5px; }
+
+    .qty-control { display: flex; align-items: center; overflow: hidden; border: 1px solid var(--line); border-radius: 9px; background: #fffaf6; }
+    .qty-btn { width: 29px; height: 31px; border: 0; background: transparent; cursor: pointer; font-size: 18px; line-height: 1; }
+    .qty-btn:hover { color: var(--coral-deep); background: var(--coral-pale); }
+    .qty-value { display: grid; min-width: 27px; height: 31px; place-items: center; border-inline: 1px solid var(--line); font-size: 13px; font-weight: 900; }
+
+    .delete-btn {
+      display: grid;
+      width: 30px;
+      height: 30px;
+      place-items: center;
+      border: 0;
+      border-radius: 8px;
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .delete-btn:hover { color: #fff; background: var(--coral); }
+
+    .total-box {
+      margin-top: 18px;
+      min-height: 205px;
+      padding: 23px;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: linear-gradient(135deg, #fffaf4, #fff);
+    }
+
+    .total-line { display: flex; align-items: center; justify-content: space-between; gap: 15px; }
+    .total-label { font-size: 16px; font-weight: 900; }
+    .total-price { color: var(--coral-deep); font-size: 27px; font-weight: 950; letter-spacing: -0.04em; }
+    .total-selection-summary {
+      display: grid;
+      gap: 8px;
+      min-height: 74px;
+      margin-top: 15px;
+      padding: 14px 15px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,.72);
+      font-size: 15px;
+      line-height: 1.45;
+    }
+    .total-summary-item { display: flex; justify-content: space-between; gap: 12px; }
+    .total-summary-item span { color: var(--espresso); font-weight: 750; }
+    .total-summary-item strong { flex: 0 0 auto; color: var(--coral-deep); }
+
+    .copy-btn {
+      width: 100%;
+      margin-top: 13px;
+      padding: 13px 16px;
+      border: 0;
+      border-radius: 12px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--espresso), #594033);
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(59, 42, 35, 0.16);
+      font-weight: 850;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .copy-btn:hover { transform: translateY(-1px); box-shadow: 0 13px 28px rgba(59, 42, 35, 0.23); }
+    .copy-btn:active { transform: translateY(0); }
+    .copy-btn:disabled { cursor: not-allowed; opacity: 0.45; transform: none; box-shadow: none; }
+    .delivery-order-hint { margin: 8px 0 0; color: var(--espresso); text-align: center; font-size: 13px; font-weight: 900; }
+
+    .mobile-total {
+      position: fixed;
+      z-index: 20;
+      right: 14px;
+      bottom: 14px;
+      left: auto;
+      display: flex;
+      width: min(330px, calc(100% - 28px));
+      max-height: 150px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 5px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      border-radius: 14px;
+      color: #fff;
+      background: rgba(59, 42, 35, 0.95);
+      box-shadow: 0 14px 36px rgba(59, 42, 35, 0.28);
+      backdrop-filter: blur(12px);
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    body.order-panel-in-view .mobile-total {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(125%);
+    }
+
+    .mobile-total-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+    .mobile-total small { display: block; margin-bottom: 1px; opacity: 0.75; font-size: 10px; }
+    .mobile-total strong { font-size: 20px; }
+    .mobile-total-action { font-size: 20px; font-weight: 900; }
+    .mobile-total-summary { display: grid; gap: 3px; max-height: 48px; padding-top: 5px; overflow-y: auto; border-top: 1px solid rgba(255,255,255,.22); }
+    .mobile-total-summary-item { display: flex; justify-content: space-between; gap: 10px; font-size: 11px; line-height: 1.25; text-align: left; }
+    .mobile-total-summary-item span:first-child { min-width: 0; overflow-wrap: anywhere; }
+    .mobile-total-summary-item b { flex: 0 0 auto; color: #ffd5c7; }
+    .event-phone-label { color: var(--coral-deep); font-size: 15px; font-weight: 900; line-height: 1.5; }
+
+    .toast {
+      position: fixed;
+      z-index: 40;
+      top: 18px;
+      left: 50%;
+      padding: 11px 17px;
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(59, 42, 35, 0.94);
+      box-shadow: 0 11px 30px rgba(59, 42, 35, 0.25);
+      font-size: 13px;
+      font-weight: 800;
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, -18px);
+      transition: opacity 0.22s ease, transform 0.22s ease;
+    }
+
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 1160px) {
+      .menu-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 880px) {
+      .header-inner { width: min(100% - 30px, 720px); padding: 22px 0; }
+      .brand-mark { width: 57px; height: 57px; font-size: 29px; }
+      .brand p { font-size: 14px; }
+      .header-guide { display: none; }
+      .layout { width: min(100% - 24px, 720px); margin-top: 12px; margin-bottom: 110px; }
+      .menu-panel { padding: 13px; border-radius: 19px; }
+      .order-panel { margin-top: 14px; padding: 19px; }
+      .cart-list { max-height: none; }
+      .mobile-total { left: auto; width: min(300px, calc(100% - 28px)); }
+    }
+
+    @media (max-width: 560px) {
+      .header-inner { width: calc(100% - 24px); }
+      .brand { gap: 11px; }
+      .brand-mark { width: 49px; height: 49px; font-size: 25px; }
+      .brand h1 { font-size: clamp(25px, 8vw, 36px); }
+      .brand p { margin-top: 5px; font-size: 12px; }
+      .category-tabs { gap: 5px; padding: 5px; }
+      .event-banner { grid-template-columns: auto minmax(0, 1fr); gap: 11px; padding: 16px; }
+      .event-copy strong { font-size: 17px; }
+      .event-copy p { font-size: 12px; }
+      .event-icon { display: none; }
+      .tab { min-width: 94px; min-height: 49px; padding: 12px 14px; font-size: 15px; }
+      .helper-text { margin-block: 14px 12px; font-size: 12px; }
+      .menu-grid { gap: 9px; }
+      .all-category-title { margin-top: 18px; padding: 14px 16px; border-left-width: 7px; font-size: 25px; }
+      .menu-card { min-height: 106px; padding: 13px; border-radius: 14px; }
+      .menu-name { font-size: 16px; }
+      .menu-price { font-size: 15px; }
+      .add-symbol { width: 28px; height: 28px; font-size: 19px; }
+      .order-heading h2 { font-size: 23px; }
+      .delivery-fields { grid-template-columns: 1fr; gap: 0; }
+      .cart-item { grid-template-columns: minmax(0, 1fr); }
+      .cart-actions { justify-content: flex-end; }
+    }
+
+    @media (max-width: 380px) {
+      .menu-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .site-header, .menu-panel, .mobile-total, .copy-btn, .clear-btn, .delete-btn, .qty-control { display: none !important; }
+      .layout { display: block; width: 100%; margin: 0; }
+      .order-panel { position: static; border: 0; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <div id="storeStatusBanner" class="store-status-banner" role="status">오늘은 영업마감 되었습니다. 내일 다시 뵙겠습니다^^</div>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">☕</div>
+        <div>
+          <h1>FRENCH COFFEE</h1>
+          <p>오늘도 따뜻한 한 잔</p>
+        </div>
+      </div>
+      <div class="header-guide"><span aria-hidden="true">☷</span> 메뉴를 선택해 주세요</div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="menu-panel" aria-labelledby="menu-title">
+      <h2 id="menu-title" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">메뉴 선택</h2>
+      <!-- EVENT 수정 시작: 아래 제목과 설명 글자만 바꿔서 사용하세요. -->
+      <section class="event-banner" aria-label="이벤트 안내">
+        <span class="event-label">EVENT</span>
+        <div class="event-copy">
+          <strong>이벤트 제목을 입력해 주세요</strong>
+          <p>이곳에 행사 기간이나 혜택 내용을 자유롭게 입력하세요.</p>
+        </div>
+        <span class="event-icon" aria-hidden="true">🎁</span>
+      </section>
+      <!-- EVENT 수정 끝 -->
+      <nav class="category-tabs" aria-label="메뉴 종류">
+        <button class="tab active" type="button" data-category="all">전체</button>
+        <button class="tab" type="button" data-category="coffee">커피</button>
+        <button class="tab" type="button" data-category="toast">토스트</button>
+        <button class="tab" type="button" data-category="dessert">분식</button>
+        <button class="tab" type="button" data-category="smoothie">스무디</button>
+        <button class="tab" type="button" data-category="drink">주스·에이드</button>
+        <button class="tab" type="button" data-category="tea">허브티</button>
+      </nav>
+      <p class="helper-text"><span class="helper-icon" aria-hidden="true">i</span> 메뉴 카드를 누르면 주문 내역에 바로 추가됩니다.</p>
+      <div id="menuGrid" class="menu-grid"></div>
+    </section>
+
+    <aside id="orderPanel" class="order-panel" aria-labelledby="order-heading">
+      <div class="order-heading">
+        <h2 id="order-heading">주문 내역</h2>
+        <span id="orderCount" class="order-count">0개 선택</span>
+      </div>
+
+      <div class="delivery-fields">
+        <div class="field-group">
+          <span class="field-label">배달 건물</span>
+          <div class="building-switch" role="group" aria-label="배달 건물 선택">
+            <button class="building-btn active" type="button" data-building="르네관" aria-pressed="true">르네관</button>
+            <button class="building-btn" type="button" data-building="시떼관" aria-pressed="false">시떼관</button>
+          </div>
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="roomNumber">호수</label>
+          <input id="roomNumber" class="room-input" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 305호" aria-describedby="roomHelp">
+          <span id="roomHelp" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">배달받을 호수를 입력하세요.</span>
+        </div>
+      </div>
+
+      <section class="selected-section" aria-labelledby="selected-title">
+        <div class="selected-title-row">
+          <h3 id="selected-title">선택 메뉴</h3>
+          <button id="clearCart" class="clear-btn" type="button" hidden>전체 삭제</button>
+        </div>
+        <div id="cartList" class="cart-list" aria-live="polite"></div>
+      </section>
+
+      <div class="field-group">
+        <label class="field-label" for="requestText">메뉴 메모 · 요청사항</label>
+        <textarea id="requestText" class="request-input" placeholder="메뉴 추가 내용이나 요청사항을 적어주세요."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label event-phone-label" for="eventPhone">프렌치커피 ▶이벤트알림◀에 동의하시면 휴대폰 번호를 입력해 주세요^ㅡ^</label>
+        <input id="eventPhone" class="room-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="010-0000-0000">
+      </div>
+
+      <div class="total-box">
+        <div class="total-line">
+          <span class="total-label">총 합계</span>
+          <strong id="totalPrice" class="total-price">0원</strong>
+        </div>
+        <div id="totalSelectionSummary" class="total-selection-summary">선택한 메뉴가 없습니다.</div>
+        <button id="orderButton" class="copy-btn" type="button" disabled>주문하기</button>
+        <p class="delivery-order-hint">배달을 원하시는 동/호수를 입력해 주세요</p>
+      </div>
+
+      <section id="orderCompletePanel" class="order-complete-panel" hidden aria-live="polite">
+        <h3 class="order-complete-title">주문이 완료되었습니다!</h3>
+        <div class="complete-actions">
+          <button id="printOrderButton" class="receipt-print-btn" type="button">주문내역보기</button>
+          <a id="ownerPhoneLink" class="owner-call-btn" href="tel:01098711250">
+            문의하기 · 주인장 바로 연결
+            <small>오주문 · 추가주문 · 대기시간 문의</small>
+          </a>
+        </div>
+        <div id="printReceipt" class="print-receipt" hidden></div>
+      </section>
+    </aside>
+  </main>
+
+  <button id="mobileTotal" class="mobile-total" type="button" aria-label="주문 내역으로 이동">
+    <span class="mobile-total-head"><span><small>총 합계</small><strong id="mobileTotalPrice">0원</strong></span><span class="mobile-total-action">주문하기 ↓</span></span>
+    <span id="mobileTotalSummary" class="mobile-total-summary">선택한 메뉴가 없습니다.</span>
+  </button>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <div id="storeClosedModal" class="store-closed-modal" role="dialog" aria-modal="true" aria-labelledby="storeClosedTitle" hidden>
+    <div class="store-closed-dialog">
+      <span class="closed-icon" aria-hidden="true">☕</span>
+      <h2 id="storeClosedTitle">오늘은 영업마감 되었습니다.<br>내일 다시 뵙겠습니다^^</h2>
+      <button id="storeClosedConfirm" type="button">확인</button>
+    </div>
+  </div>
+
+  <script>
+    // 가격은 원 단위입니다. 사진에서 가려진 군만두·떡볶이는 2,500원으로 임시 반영했습니다.
+    const MENU = [
+      { id: 'americano', category: 'coffee', name: '아메리카노', temperatures: { HOT: 2500, ICE: 2500 }, tag: 'HOT/ICE' },
+      { id: 'cafe-latte', category: 'coffee', name: '카페라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
+      { id: 'vanilla-latte', category: 'coffee', name: '바닐라라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
+      { id: 'dolce-latte', category: 'coffee', name: '돌체라떼', temperatures: { HOT: 3000, ICE: 3500 }, tag: 'HOT/ICE' },
+      { id: 'green-latte', category: 'coffee', name: '녹차라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
+      { id: 'choco-latte', category: 'coffee', name: '초코라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
+
+      { id: 'chamomile', category: 'tea', name: '캐모마일', price: 2500, tag: 'TEA' },
+      { id: 'peppermint', category: 'tea', name: '페퍼민트', price: 2500, tag: 'TEA' },
+      { id: 'rooibos', category: 'tea', name: '루이보이스', price: 2500, tag: 'TEA' },
+      { id: 'earl-grey', category: 'tea', name: '얼그레이', price: 2500, tag: 'TEA' },
+      { id: 'apple-yuja-tea', category: 'tea', name: '애플유자티', price: 2500, tag: 'TEA' },
+      { id: 'apple-tea', category: 'tea', name: '애플티', price: 2500, tag: 'TEA' },
+      { id: 'hibiscus', category: 'tea', name: '히비스커스', price: 2500, tag: 'TEA' },
+      { id: 'yuja-tea', category: 'tea', name: '유자차', price: 2500, tag: 'TEA' },
+      { id: 'peach-iced-tea', category: 'tea', name: '복숭아 아이스티', price: 2000, tag: 'ICE' },
+
+      { id: 'apricot-juice', category: 'drink', name: '살구주스', price: 2500, tag: 'JUICE' },
+      { id: 'strawberry-juice', category: 'drink', name: '딸기주스', price: 2500, tag: 'JUICE' },
+      { id: 'orange-juice', category: 'drink', name: '오렌지주스', price: 2500, tag: 'JUICE' },
+      { id: 'strawberry-banana', category: 'drink', name: '딸바 생과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'tomato', category: 'drink', name: '토마토 생과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'season-fruit', category: 'drink', name: '계절과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'apricot-ade', category: 'drink', name: '살구에이드', price: 3000, tag: 'ADE' },
+      { id: 'strawberry-ade', category: 'drink', name: '딸기에이드', price: 3000, tag: 'ADE' },
+      { id: 'orange-ade', category: 'drink', name: '오렌지에이드', price: 3000, tag: 'ADE' },
+      { id: 'green-grape-ade', category: 'drink', name: '청포도에이드', price: 3000, tag: 'ADE' },
+      { id: 'yuja-ade', category: 'drink', name: '유자에이드', price: 3000, tag: 'ADE' },
+
+      { id: 'strawberry-smoothie', category: 'smoothie', name: '딸기스무디', price: 3500, tag: 'ICE' },
+      { id: 'strawberry-yogurt', category: 'smoothie', name: '딸기요거트스무디', price: 3500, tag: 'ICE' },
+      { id: 'mango-smoothie', category: 'smoothie', name: '망고스무디', price: 3500, tag: 'ICE' },
+      { id: 'mango-yogurt', category: 'smoothie', name: '망고요거트스무디', price: 3500, tag: 'ICE' },
+      { id: 'blueberry-smoothie', category: 'smoothie', name: '블루베리스무디', price: 3500, tag: 'ICE' },
+      { id: 'blueberry-yogurt', category: 'smoothie', name: '블루베리요거트스무디', price: 3500, tag: 'ICE' },
+      { id: 'plain-yogurt', category: 'smoothie', name: '플레인요거트스무디', price: 3500, tag: 'ICE' },
+
+      { id: 'mom-toast', category: 'toast', name: '엄마(옛날야채토스트)', price: 3000, tag: 'TOAST' },
+      { id: 'ham-cheese', category: 'toast', name: '햄치즈 토스트', price: 3500, tag: 'TOAST' },
+      { id: 'spicy-mom-mozza', category: 'toast', name: '매운엄마모짜', price: 3500, tag: 'TOAST' },
+      { id: 'mozza-galbi-mild', category: 'toast', name: '모짜갈비(순한맛)', price: 4000, tag: 'TOAST' },
+      { id: 'mozza-galbi-spicy', category: 'toast', name: '모짜갈비(매운맛)', price: 4000, tag: 'TOAST' },
+      { id: 'chili-bbq-pork', category: 'toast', name: '칠리바베큐삼겹', price: 4000, tag: 'TOAST' },
+      { id: 'spicy-chili-bbq-pork', category: 'toast', name: '매운칠리바베큐삼겹', price: 4000, tag: 'TOAST' },
+      { id: 'french-toast', category: 'toast', name: '프렌치 토스트(4조각)', price: 2500, tag: 'TOAST' },
+      { id: 'strawberry-jam-toast', category: 'toast', name: '딸기잼 토스트', price: 1500, tag: 'TOAST' },
+      { id: 'blueberry-jam-toast', category: 'toast', name: '블루베리잼 토스트', price: 1500, tag: 'TOAST' },
+      { id: 'maple-jam-toast', category: 'toast', name: '메이플잼 토스트', price: 1500, tag: 'TOAST' },
+
+      { id: 'buldak', category: 'dessert', name: '불닭볶음면', price: 2000, tag: 'FOOD' },
+      { id: 'buljja', category: 'dessert', name: '불짜면(불닭+짜파게티)', price: 2000, tag: 'FOOD' },
+      { id: 'squid-cup', category: 'dessert', name: '컵라면-오징어짬뽕', price: 2000, tag: 'FOOD' },
+      { id: 'jin-cup', category: 'dessert', name: '컵라면-진라면', price: 2000, tag: 'FOOD' },
+      { id: 'shin-cup', category: 'dessert', name: '컵라면-신라면', price: 2000, tag: 'FOOD' },
+      { id: 'eggs', category: 'dessert', name: '계란 5알', price: 3000, tag: 'FOOD' },
+      { id: 'dumplings', category: 'dessert', name: '군만두 8개', price: 2500, tag: 'FOOD' },
+      { id: 'tteokbokki', category: 'dessert', name: '떡볶이(1인분)', price: 2500, tag: 'FOOD' },
+      { id: 'misugaru', category: 'dessert', name: '미숫가루', price: 3500, tag: 'BENTO' }
+    ];
+
+    const state = { category: 'all', building: '르네관', cart: new Map(), storeOpen: true };
+    const menuGrid = document.getElementById('menuGrid');
+    const cartList = document.getElementById('cartList');
+    const orderCount = document.getElementById('orderCount');
+    const totalPrice = document.getElementById('totalPrice');
+    const totalSelectionSummary = document.getElementById('totalSelectionSummary');
+    const mobileTotalPrice = document.getElementById('mobileTotalPrice');
+    const mobileTotalSummary = document.getElementById('mobileTotalSummary');
+    const clearCart = document.getElementById('clearCart');
+    const orderButton = document.getElementById('orderButton');
+    const toast = document.getElementById('toast');
+    const orderCompletePanel = document.getElementById('orderCompletePanel');
+    const printReceipt = document.getElementById('printReceipt');
+    const storeClosedModal = document.getElementById('storeClosedModal');
+    // 전화번호를 바꾸려면 아래 값만 수정하면 됩니다.
+    const OWNER_PHONE = '010-9871-1250';
+    let toastTimer;
+
+    /*
+      주문 전송 연결 위치
+      1) 사장님이 사용할 주문 수신 서버 주소를 아래 따옴표 안에 넣으세요.
+      2) 음성 알림은 주문 수신 화면에서 새 주문을 받은 뒤 재생해야 합니다.
+         예: const alarm = new Audio('order-alarm.mp3'); alarm.play();
+    */
+    const ORDER_API_URL = 'https://coffee-order-api.anwlrocnfwkd.workers.dev/api/orders';
+    const STORE_STATUS_API_URL = 'https://coffee-order-api.anwlrocnfwkd.workers.dev/api/store-status';
+
+    const won = value => value.toLocaleString('ko-KR') + '원';
+
+    function tagClass(tag) {
+      if (tag === 'ICE') return 'ice';
+      if (['TOAST', 'FOOD', 'BENTO'].includes(tag)) return 'food';
+      return '';
+    }
+
+    const ALL_CATEGORY_GROUPS = [
+      { id: 'coffee', label: '커피' },
+      { id: 'toast', label: '토스트' },
+      { id: 'dessert', label: '분식' },
+      { id: 'smoothie', label: '스무디' },
+      { id: 'drink', label: '주스·에이드' },
+      { id: 'tea', label: '허브티' }
+    ];
+
+    function menuCardHtml(item) {
+        const temperatureButtons = item.temperatures ? `
+          <span class="temperature-options" aria-label="${item.name} 온도 선택">
+            <button class="temperature-btn" type="button" data-id="${item.id}" data-temperature="HOT"><span class="temp-check">□</span> HOT ${won(item.temperatures.HOT)}</button>
+            <button class="temperature-btn ice" type="button" data-id="${item.id}" data-temperature="ICE"><span class="temp-check">□</span> ICE ${won(item.temperatures.ICE)}</button>
+          </span>` : '';
+        const displayPrice = item.temperatures ? Math.min(...Object.values(item.temperatures)) : item.price;
+        return `
+        <article class="menu-card ${item.temperatures ? 'temperature-card' : ''}" data-id="${item.id}" tabindex="0" role="button" aria-label="${item.name} 선택 또는 취소">
+          <button class="menu-cancel-btn" type="button" data-cancel-menu="${item.id}" aria-label="${item.name} 선택 취소">×</button>
+          <span class="card-top">
+            <span class="menu-name">${item.name}</span>
+            <span class="menu-tag ${tagClass(item.tag)}">${item.tag}</span>
+          </span>
+          ${temperatureButtons || `<span class="card-bottom">
+            <strong class="menu-price">${won(displayPrice)}</strong>
+            <span class="add-symbol" aria-hidden="true">+</span>
+          </span>`}
+        </article>`;
+    }
+
+    function renderMenu() {
+      if (state.category === 'all') {
+        menuGrid.innerHTML = ALL_CATEGORY_GROUPS.map(group => {
+          const cards = MENU.filter(item => item.category === group.id).map(menuCardHtml).join('');
+          return `<h2 class="all-category-title">${group.label}</h2>${cards}`;
+        }).join('');
+      } else {
+        menuGrid.innerHTML = MENU.filter(item => item.category === state.category).map(menuCardHtml).join('');
+      }
+      updateMenuSelection();
+    }
+
+    function updateMenuSelection() {
+      document.querySelectorAll('.menu-card').forEach(card => {
+        const id = card.dataset.id;
+        const selected = [...state.cart.values()].some(item => item.baseId === id);
+        card.classList.toggle('selected', selected);
+        if (!selected) card.classList.remove('added');
+        card.querySelectorAll('[data-temperature]').forEach(button => {
+          const cartId = `${id}-${button.dataset.temperature.toLowerCase()}`;
+          const isSelected = state.cart.has(cartId);
+          button.classList.toggle('selected', isSelected);
+          const check = button.querySelector('.temp-check');
+          if (check) check.textContent = isSelected ? '☑' : '□';
+        });
+      });
+    }
+
+    function addItem(id, card, temperature = '') {
+      if (!state.storeOpen) {
+        showClosedPopup();
+        return;
+      }
+      const item = MENU.find(menu => menu.id === id);
+      if (!item) return;
+      if (item.temperatures && !temperature) {
+        showToast('ICE 또는 HOT을 선택해 주세요');
+        return;
+      }
+      const cartId = temperature ? `${id}-${temperature.toLowerCase()}` : id;
+      const price = item.temperatures ? item.temperatures[temperature] : item.price;
+      const name = temperature ? `${item.name} ${temperature}` : item.name;
+      const current = state.cart.get(cartId);
+      orderCompletePanel.hidden = true;
+      if (current) {
+        state.cart.delete(cartId);
+        showToast(name + ' 선택 취소');
+        renderCart();
+        return;
+      }
+      if (item.temperatures) {
+        [...state.cart.entries()].forEach(([key, value]) => {
+          if (value.baseId === id) state.cart.delete(key);
+        });
+      }
+      state.cart.set(cartId, { ...item, baseId: id, id: cartId, name, price, temperature, qty: 1 });
+      if (card) {
+        card.classList.remove('added');
+        void card.offsetWidth;
+        card.classList.add('added');
+      }
+      showToast(name + ' 추가');
+      renderCart();
+    }
+
+    function cancelMenu(id) {
+      let removed = false;
+      [...state.cart.entries()].forEach(([key, value]) => {
+        if (value.baseId === id) {
+          state.cart.delete(key);
+          removed = true;
+        }
+      });
+      if (removed) {
+        const item = MENU.find(menu => menu.id === id);
+        showToast((item ? item.name : '메뉴') + ' 선택 취소');
+        renderCart();
+      }
+    }
+
+    function changeQty(id, amount) {
+      const item = state.cart.get(id);
+      if (!item) return;
+      const next = item.qty + amount;
+      if (next <= 0) state.cart.delete(id);
+      else state.cart.set(id, { ...item, qty: next });
+      renderCart();
+    }
+
+    function renderCart() {
+      const items = [...state.cart.values()];
+      const totalQty = items.reduce((sum, item) => sum + item.qty, 0);
+      const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+      orderCount.textContent = totalQty + '개 선택';
+      totalPrice.textContent = won(total);
+      mobileTotalPrice.textContent = won(total);
+      totalSelectionSummary.innerHTML = items.length ? items.map(item => `
+        <div class="total-summary-item">
+          <span>${item.name} × ${item.qty}</span>
+          <strong>${won(item.price * item.qty)}</strong>
+        </div>
+      `).join('') : '선택한 메뉴가 없습니다.';
+      mobileTotalSummary.innerHTML = items.length ? items.map(item => `
+        <span class="mobile-total-summary-item"><span>${item.name} × ${item.qty}</span><b>${won(item.price * item.qty)}</b></span>
+      `).join('') : '선택한 메뉴가 없습니다.';
+      clearCart.hidden = items.length === 0;
+      orderButton.disabled = items.length === 0 || !state.storeOpen;
+
+      if (!items.length) {
+        cartList.innerHTML = '<div class="empty-cart"><span>선택한 메뉴가 없습니다.<br>왼쪽 메뉴를 눌러 담아주세요.</span></div>';
+        updateMenuSelection();
+        return;
+      }
+
+      cartList.innerHTML = items.map(item => `
+        <article class="cart-item">
+          <div>
+            <div class="cart-name" title="${item.name}">${item.name}</div>
+            <div class="cart-subtotal">${won(item.price)} · 소계 ${won(item.price * item.qty)}</div>
+          </div>
+          <div class="cart-actions">
+            <div class="qty-control" aria-label="${item.name} 수량 조절">
+              <button class="qty-btn" type="button" data-action="minus" data-id="${item.id}" aria-label="${item.name} 한 개 빼기">−</button>
+              <span class="qty-value" aria-label="수량 ${item.qty}">${item.qty}</span>
+              <button class="qty-btn" type="button" data-action="plus" data-id="${item.id}" aria-label="${item.name} 한 개 추가">+</button>
+            </div>
+            <button class="delete-btn" type="button" data-action="delete" data-id="${item.id}" aria-label="${item.name} 삭제">×</button>
+          </div>
+        </article>
+      `).join('');
+      updateMenuSelection();
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1200);
+    }
+
+    function buildOrderText() {
+      const room = document.getElementById('roomNumber').value.trim() || '호수 미입력';
+      const request = document.getElementById('requestText').value.trim();
+      const items = [...state.cart.values()];
+      const total = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+      const lines = items.map(item => `- ${item.name} × ${item.qty} = ${won(item.price * item.qty)}`);
+      return [
+        '[FRENCH COFFEE 주문]',
+        `배달: ${state.building} ${room}`,
+        '',
+        ...lines,
+        '',
+        `총 합계: ${won(total)}`,
+        request ? `요청사항: ${request}` : ''
+      ].filter((line, index, arr) => line || (index > 0 && arr[index - 1])).join('\n').trim();
+    }
+
+    function buildOrderPayload() {
+      const room = document.getElementById('roomNumber').value.trim();
+      const request = document.getElementById('requestText').value.trim();
+      const phone = document.getElementById('eventPhone').value.trim();
+      const items = [...state.cart.values()].map(item => ({
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        quantity: item.qty,
+        subtotal: item.price * item.qty
+      }));
+
+      return {
+        building: state.building,
+        room,
+        request,
+        phone,
+        items,
+        total: items.reduce((sum, item) => sum + item.subtotal, 0),
+        orderedAt: new Date().toISOString(),
+        text: buildOrderText()
+      };
+    }
+
+    async function submitOrder(payload) {
+      // 별도 주문 프로그램에서도 받을 수 있도록 주문 이벤트를 발생시킵니다.
+      window.dispatchEvent(new CustomEvent('french-coffee-order', { detail: payload }));
+
+      if (!ORDER_API_URL) {
+        showToast('주문 전송 코드를 연결해 주세요');
+        console.log('주문 연동용 데이터:', payload);
+        return;
+      }
+
+      const response = await fetch(ORDER_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        let errorData = {};
+        try { errorData = await response.json(); } catch (_) {}
+        if (response.status === 409 || response.status === 403 || errorData.code === 'STORE_CLOSED') {
+          applyStoreStatus(false, true);
+          const closedError = new Error('영업 마감');
+          closedError.code = 'STORE_CLOSED';
+          throw closedError;
+        }
+        throw new Error('주문 전송 실패');
+      }
+      showToast('주문이 접수되었습니다');
+    }
+
+    function showClosedPopup() {
+      storeClosedModal.hidden = false;
+      document.getElementById('storeClosedConfirm').focus();
+    }
+
+    function applyStoreStatus(isOpen, showPopup = false) {
+      const wasOpen = state.storeOpen;
+      state.storeOpen = Boolean(isOpen);
+      document.body.classList.toggle('store-closed', !state.storeOpen);
+      document.querySelectorAll('#roomNumber, #requestText, #eventPhone, .building-btn').forEach(element => {
+        element.disabled = !state.storeOpen;
+      });
+      if (!state.storeOpen && (showPopup || wasOpen)) showClosedPopup();
+      if (state.storeOpen) storeClosedModal.hidden = true;
+      renderCart();
+    }
+
+    async function refreshStoreStatus(showPopup = false) {
+      try {
+        const response = await fetch(STORE_STATUS_API_URL, { cache: 'no-store' });
+        if (!response.ok) return;
+        const data = await response.json();
+        const isOpen = typeof data.is_open === 'boolean' ? data.is_open : data.isOpen;
+        if (typeof isOpen === 'boolean') applyStoreStatus(isOpen, showPopup);
+      } catch (error) {
+        console.warn('영업 상태를 확인하지 못했습니다.', error);
+      }
+    }
+
+    function showOrderCompletion(payload) {
+      printReceipt.textContent = payload.text;
+      printReceipt.hidden = true;
+      document.getElementById('printOrderButton').textContent = '주문내역보기';
+      const phoneLink = document.getElementById('ownerPhoneLink');
+      phoneLink.href = 'tel:' + OWNER_PHONE.replace(/[^0-9]/g, '');
+      phoneLink.title = OWNER_PHONE;
+      orderCompletePanel.hidden = false;
+      orderCompletePanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    menuGrid.addEventListener('click', event => {
+      const cancelButton = event.target.closest('[data-cancel-menu]');
+      if (cancelButton) {
+        cancelMenu(cancelButton.dataset.cancelMenu);
+        return;
+      }
+      const temperatureButton = event.target.closest('[data-temperature]');
+      if (temperatureButton) {
+        addItem(temperatureButton.dataset.id, temperatureButton.closest('.menu-card'), temperatureButton.dataset.temperature);
+        return;
+      }
+      const card = event.target.closest('.menu-card');
+      if (card) addItem(card.dataset.id, card);
+    });
+
+    document.querySelector('.category-tabs').addEventListener('click', event => {
+      const tab = event.target.closest('.tab');
+      if (!tab) return;
+      state.category = tab.dataset.category;
+      document.querySelectorAll('.tab').forEach(button => button.classList.toggle('active', button === tab));
+      renderMenu();
+    });
+
+    document.querySelector('.building-switch').addEventListener('click', event => {
+      const button = event.target.closest('.building-btn');
+      if (!button) return;
+      state.building = button.dataset.building;
+      document.querySelectorAll('.building-btn').forEach(item => {
+        const selected = item === button;
+        item.classList.toggle('active', selected);
+        item.setAttribute('aria-pressed', selected ? 'true' : 'false');
+      });
+    });
+
+    cartList.addEventListener('click', event => {
+      const button = event.target.closest('[data-action]');
+      if (!button) return;
+      const { action, id } = button.dataset;
+      if (action === 'minus') changeQty(id, -1);
+      if (action === 'plus') changeQty(id, 1);
+      if (action === 'delete') { state.cart.delete(id); renderCart(); }
+    });
+
+    clearCart.addEventListener('click', () => {
+      state.cart.clear();
+      renderCart();
+      showToast('주문 내역을 비웠습니다');
+    });
+
+    orderButton.addEventListener('click', async () => {
+      if (!state.storeOpen) {
+        showClosedPopup();
+        return;
+      }
+      const payload = buildOrderPayload();
+      if (!payload.room) {
+        document.getElementById('roomNumber').focus();
+        showToast('호수를 입력해 주세요');
+        return;
+      }
+
+      try {
+        orderButton.disabled = true;
+        orderButton.textContent = '주문 처리 중...';
+        await submitOrder(payload);
+        showOrderCompletion(payload);
+        state.cart.clear();
+        renderCart();
+      } catch (error) {
+        if (error && error.code === 'STORE_CLOSED') showToast('오늘 영업이 마감되었습니다');
+        else showToast('주문 전송에 실패했습니다');
+      } finally {
+        orderButton.disabled = state.cart.size === 0 || !state.storeOpen;
+        orderButton.textContent = '주문하기';
+      }
+    });
+
+    document.getElementById('storeClosedConfirm').addEventListener('click', () => {
+      storeClosedModal.hidden = true;
+    });
+
+    document.getElementById('mobileTotal').addEventListener('click', () => {
+      window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    });
+
+    if ('IntersectionObserver' in window) {
+      const orderButtonObserver = new IntersectionObserver(entries => {
+        document.body.classList.toggle('order-panel-in-view', entries.some(entry => entry.isIntersecting));
+      }, { threshold: 0.15 });
+      orderButtonObserver.observe(document.getElementById('orderButton'));
+    }
+
+    document.getElementById('printOrderButton').addEventListener('click', event => {
+      printReceipt.hidden = !printReceipt.hidden;
+      event.currentTarget.textContent = printReceipt.hidden ? '주문내역보기' : '주문내역 닫기';
+    });
+
+    renderMenu();
+    renderCart();
+    refreshStoreStatus(true);
+    setInterval(() => refreshStoreStatus(false), 10000);
+  </script>
+</body>
+</html>
+
