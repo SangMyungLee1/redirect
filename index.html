@@ -1050,6 +1050,7 @@
         const id = card.dataset.id;
         const selected = [...state.cart.values()].some(item => item.baseId === id);
         card.classList.toggle('selected', selected);
+        if (!selected) card.classList.remove('added');
         card.querySelectorAll('[data-temperature]').forEach(button => {
           const cartId = `${id}-${button.dataset.temperature.toLowerCase()}`;
           const isSelected = state.cart.has(cartId);
