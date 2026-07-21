@@ -18,6 +18,10 @@
       --muted: #8c766b;
       --line: #e7d9cb;
       --sage: #8d9a7b;
+      --lavender: #987bae;
+      --lavender-deep: #6f5b7b;
+      --lavender-line: #b9a3c9;
+      --lavender-pale: #fbf9fc;
       --shadow: 0 18px 50px rgba(59, 42, 35, 0.09);
       --radius-lg: 24px;
       --radius-md: 17px;
@@ -568,12 +572,47 @@
     .field-group { margin-top: 17px; }
     .field-label { display: block; margin: 0 0 8px; font-size: 14px; font-weight: 850; }
 
-    .sage-field {
-      padding: 14px;
-      border: 2px solid rgba(141, 154, 123, 0.62);
-      border-radius: 15px;
-      background: rgba(232, 236, 223, 0.72);
+    .order-contact-card {
+      margin-top: 19px;
+      padding: 18px;
+      border: 3px solid var(--lavender-line);
+      border-radius: 19px;
+      background: var(--lavender-pale);
+      box-shadow: 0 12px 28px rgba(93, 73, 104, 0.08);
     }
+
+    .order-contact-card .delivery-fields { grid-template-columns: 1fr; gap: 0; }
+    .order-contact-card .field-group { margin-top: 18px; }
+    .order-contact-card .delivery-fields .field-group:first-child { margin-top: 0; }
+    .order-contact-card .field-label { color: #5d4968; font-size: 15px; }
+    .order-contact-card .building-switch { border-color: var(--lavender-line); }
+    .order-contact-card .building-btn + .building-btn { border-left-color: var(--lavender-line); }
+    .order-contact-card .building-btn.active { background: var(--lavender); }
+    .order-contact-card .room-input,
+    .order-contact-card .request-input { border-color: #d1c3da; }
+    .order-contact-card .room-input:focus,
+    .order-contact-card .request-input:focus { border-color: var(--lavender-deep); box-shadow: 0 0 0 3px rgba(111, 91, 123, 0.12); }
+
+    .phone-label-row { display: flex; align-items: center; gap: 8px; }
+    .required-badge { padding: 3px 7px; border-radius: 999px; color: #fff; background: var(--lavender-deep); font-size: 10px; font-weight: 900; }
+    .phone-help { display: block; margin: 7px 2px 0; color: #877990; font-size: 11px; font-weight: 650; }
+
+    .marketing-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 14px;
+      padding: 13px 14px;
+      border: 2px solid var(--lavender-line);
+      border-radius: 13px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .marketing-option:hover { border-color: var(--lavender-deep); }
+    .marketing-option input { width: 21px; height: 21px; flex: 0 0 auto; margin: 1px 0 0; accent-color: var(--lavender-deep); cursor: pointer; }
+    .marketing-copy strong { display: block; color: #5d4968; font-size: 14px; font-weight: 900; line-height: 1.45; }
+    .marketing-copy small { display: block; margin-top: 3px; color: #877990; font-size: 10px; font-weight: 650; }
 
     .building-switch {
       display: grid;
@@ -905,30 +944,41 @@
         <div id="cartList" class="cart-list" aria-live="polite"></div>
       </section>
 
-      <div class="delivery-fields">
-        <div class="field-group sage-field">
-          <span class="field-label">배달 건물</span>
+      <section class="order-contact-card" aria-label="배달주소와 주문자 정보">
+        <div class="delivery-fields">
+        <div class="field-group">
+          <span class="field-label">배달주소</span>
           <div class="building-switch" role="group" aria-label="배달 건물 선택">
             <button class="building-btn active" type="button" data-building="르네관" aria-pressed="true">르네관</button>
             <button class="building-btn" type="button" data-building="시떼관" aria-pressed="false">시떼관</button>
           </div>
         </div>
-        <div class="field-group sage-field">
+        <div class="field-group">
           <label class="field-label" for="roomNumber">호수</label>
           <input id="roomNumber" class="room-input" type="text" inputmode="numeric" autocomplete="off" placeholder="예: 305호" aria-describedby="roomHelp">
           <span id="roomHelp" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">배달받을 호수를 입력하세요.</span>
         </div>
-      </div>
+        </div>
 
-      <div class="field-group sage-field">
-        <label class="field-label" for="requestText">메뉴 메모 · 요청사항</label>
+      <div class="field-group">
+        <label class="field-label" for="requestText">요청사항</label>
         <textarea id="requestText" class="request-input" placeholder="메뉴 추가 내용이나 요청사항을 적어주세요."></textarea>
       </div>
 
-      <div class="field-group sage-field">
-        <label class="field-label event-phone-label" for="eventPhone">프렌치커피 ▶이벤트알림◀에 동의하시면 휴대폰 번호를 입력해 주세요^ㅡ^</label>
-        <input id="eventPhone" class="room-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" placeholder="010-0000-0000">
+      <div class="field-group">
+        <label class="field-label phone-label-row" for="eventPhone">주문자 휴대폰 번호 <span class="required-badge">필수</span></label>
+        <input id="eventPhone" class="room-input" type="tel" inputmode="tel" autocomplete="tel" maxlength="13" placeholder="010-0000-0000" required aria-required="true">
+        <span class="phone-help">주문 확인 및 배달 연락에 사용됩니다.</span>
       </div>
+
+      <label class="marketing-option" for="marketingConsent">
+        <input id="marketingConsent" type="checkbox">
+        <span class="marketing-copy">
+          <strong>[선택] 깜짝 할인·신메뉴 소식을 문자로 받아볼게요 ☕</strong>
+          <small>이벤트 알림 수신은 선택이며, 체크하지 않아도 주문할 수 있습니다.</small>
+        </span>
+      </label>
+      </section>
 
       <div class="total-box">
         <div class="total-line">
@@ -1269,6 +1319,7 @@
       const room = document.getElementById('roomNumber').value.trim();
       const request = document.getElementById('requestText').value.trim();
       const phone = document.getElementById('eventPhone').value.trim();
+      const marketingConsent = document.getElementById('marketingConsent').checked;
       const items = [...state.cart.values()].map(item => ({
         id: item.id,
         name: item.name,
@@ -1282,6 +1333,7 @@
         room,
         request,
         phone,
+        marketing_consent: marketingConsent,
         items,
         total: items.reduce((sum, item) => sum + item.subtotal, 0),
         orderedAt: new Date().toISOString(),
@@ -1378,7 +1430,7 @@
       const wasOpen = state.storeOpen;
       state.storeOpen = Boolean(isOpen);
       document.body.classList.toggle('store-closed', !state.storeOpen);
-      document.querySelectorAll('#roomNumber, #requestText, #eventPhone, .building-btn').forEach(element => {
+      document.querySelectorAll('#roomNumber, #requestText, #eventPhone, #marketingConsent, .building-btn').forEach(element => {
         element.disabled = !state.storeOpen;
       });
       if (!state.storeOpen && (showPopup || wasOpen)) showClosedPopup();
@@ -1467,6 +1519,12 @@
       if (!payload.room) {
         document.getElementById('roomNumber').focus();
         showToast('호수를 입력해 주세요');
+        return;
+      }
+      const phoneDigits = payload.phone.replace(/[^0-9]/g, '');
+      if (!phoneDigits.startsWith('0') || phoneDigits.length < 9 || phoneDigits.length > 11) {
+        document.getElementById('eventPhone').focus();
+        showToast('주문자 전화번호를 정확히 입력해 주세요');
         return;
       }
 
