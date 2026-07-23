@@ -497,6 +497,14 @@
       margin-top: auto;
     }
 
+    .option-base-price {
+      display: block;
+      margin: 3px 0 8px;
+      color: var(--coral-deep);
+      font-size: 15px;
+      font-weight: 900;
+    }
+
     .temperature-btn {
       min-height: 40px;
       border: 1px solid var(--line);
@@ -924,6 +932,7 @@
         <button class="tab" type="button" data-category="dessert">분식</button>
         <button class="tab" type="button" data-category="smoothie">스무디</button>
         <button class="tab" type="button" data-category="drink">주스·에이드</button>
+        <button class="tab" type="button" data-category="fresh">생과일주스</button>
         <button class="tab" type="button" data-category="tea">허브티</button>
       </nav>
       <p class="helper-text"><span class="helper-icon" aria-hidden="true">i</span> 메뉴 카드를 누르면 주문 내역에 바로 추가됩니다.</p>
@@ -1030,36 +1039,46 @@
   </div>
 
   <script>
-    // 가격은 원 단위입니다. 사진에서 가려진 군만두·떡볶이는 2,500원으로 임시 반영했습니다.
+    // 가격은 원 단위입니다.
     const MENU = [
-      { id: 'americano', category: 'coffee', name: '아메리카노', temperatures: { HOT: 2500, ICE: 2500 }, tag: 'HOT/ICE' },
+      { id: 'americano', category: 'coffee', name: '아메리카노', temperatures: { HOT: 2000, ICE: 2000 }, tag: 'HOT/ICE' },
+      { id: 'dabang-coffee', category: 'coffee', name: '다방커피', temperatures: { HOT: 1500, ICE: 2000 }, tag: 'HOT/ICE' },
       { id: 'cafe-latte', category: 'coffee', name: '카페라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
       { id: 'vanilla-latte', category: 'coffee', name: '바닐라라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
       { id: 'dolce-latte', category: 'coffee', name: '돌체라떼', temperatures: { HOT: 3000, ICE: 3500 }, tag: 'HOT/ICE' },
       { id: 'green-latte', category: 'coffee', name: '녹차라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
+      { id: 'matcha-latte', category: 'coffee', name: '말차라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
       { id: 'choco-latte', category: 'coffee', name: '초코라떼', temperatures: { HOT: 2500, ICE: 3000 }, tag: 'HOT/ICE' },
+      { id: 'strawberry-latte', category: 'coffee', name: '딸기라떼', price: 3500, tag: 'ICE' },
 
       { id: 'chamomile', category: 'tea', name: '캐모마일', price: 2500, tag: 'TEA' },
       { id: 'peppermint', category: 'tea', name: '페퍼민트', price: 2500, tag: 'TEA' },
       { id: 'rooibos', category: 'tea', name: '루이보이스', price: 2500, tag: 'TEA' },
       { id: 'earl-grey', category: 'tea', name: '얼그레이', price: 2500, tag: 'TEA' },
-      { id: 'apple-yuja-tea', category: 'tea', name: '애플유자티', price: 2500, tag: 'TEA' },
+      { id: 'lemon-yuja-tea', category: 'tea', name: '레몬유자티', price: 3000, tag: 'TEA' },
+      { id: 'apple-yuja-tea', category: 'tea', name: '애플유자티', price: 3000, tag: 'TEA' },
       { id: 'apple-tea', category: 'tea', name: '애플티', price: 2500, tag: 'TEA' },
       { id: 'hibiscus', category: 'tea', name: '히비스커스', price: 2500, tag: 'TEA' },
       { id: 'yuja-tea', category: 'tea', name: '유자차', price: 2500, tag: 'TEA' },
-      { id: 'peach-iced-tea', category: 'tea', name: '복숭아 아이스티', price: 2000, tag: 'ICE' },
+      { id: 'peach-iced-tea', category: 'tea', name: '복숭아 아이스티', price: 2500, tag: 'ICE' },
+      { id: 'misugaru', category: 'tea', name: '미숫가루', price: 3500, tag: 'TEA' },
 
       { id: 'apricot-juice', category: 'drink', name: '살구주스', price: 2500, tag: 'JUICE' },
-      { id: 'strawberry-juice', category: 'drink', name: '딸기주스', price: 2500, tag: 'JUICE' },
       { id: 'orange-juice', category: 'drink', name: '오렌지주스', price: 2500, tag: 'JUICE' },
-      { id: 'strawberry-banana', category: 'drink', name: '딸바 생과일주스', price: 3500, tag: 'FRESH' },
-      { id: 'tomato', category: 'drink', name: '토마토 생과일주스', price: 3500, tag: 'FRESH' },
-      { id: 'season-fruit', category: 'drink', name: '계절과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'kiwi-juice', category: 'drink', name: '키위주스', price: 2500, tag: 'JUICE' },
+      { id: 'ice-bacchus', category: 'drink', name: '얼음+박카스', price: 2000, tag: 'ICE' },
       { id: 'apricot-ade', category: 'drink', name: '살구에이드', price: 3000, tag: 'ADE' },
       { id: 'strawberry-ade', category: 'drink', name: '딸기에이드', price: 3000, tag: 'ADE' },
       { id: 'orange-ade', category: 'drink', name: '오렌지에이드', price: 3000, tag: 'ADE' },
       { id: 'green-grape-ade', category: 'drink', name: '청포도에이드', price: 3000, tag: 'ADE' },
       { id: 'yuja-ade', category: 'drink', name: '유자에이드', price: 3000, tag: 'ADE' },
+      { id: 'lemon-ade', category: 'drink', name: '레몬에이드', price: 3000, tag: 'ADE' },
+      { id: 'grapefruit-ade', category: 'drink', name: '자몽에이드', price: 3000, tag: 'ADE' },
+
+      { id: 'strawberry-banana', category: 'fresh', name: '딸바 생과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'tomato', category: 'fresh', name: '토마토 생과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'season-fruit', category: 'fresh', name: '계절과일주스', price: 3500, tag: 'FRESH' },
+      { id: 'watermelon-juice', category: 'fresh', name: '수박주스', price: 3500, tag: 'FRESH' },
 
       { id: 'strawberry-smoothie', category: 'smoothie', name: '딸기스무디', price: 3500, tag: 'ICE' },
       { id: 'strawberry-yogurt', category: 'smoothie', name: '딸기요거트스무디', price: 3500, tag: 'ICE' },
@@ -1069,30 +1088,71 @@
       { id: 'blueberry-yogurt', category: 'smoothie', name: '블루베리요거트스무디', price: 3500, tag: 'ICE' },
       { id: 'plain-yogurt', category: 'smoothie', name: '플레인요거트스무디', price: 3500, tag: 'ICE' },
 
-      { id: 'mom-toast', category: 'toast', name: '엄마(옛날야채토스트)', price: 3000, tag: 'TOAST' },
-      { id: 'ham-cheese', category: 'toast', name: '햄치즈 토스트', price: 3500, tag: 'TOAST' },
+      { id: 'mom-toast', category: 'toast', name: '엄마(옛날야채토스트)', price: 2500, tag: 'TOAST' },
+      { id: 'ham-cheese', category: 'toast', name: '햄치즈 토스트', price: 3000, tag: 'TOAST' },
       { id: 'spicy-mom-mozza', category: 'toast', name: '매운엄마모짜', price: 3500, tag: 'TOAST' },
-      { id: 'mozza-galbi-mild', category: 'toast', name: '모짜갈비(순한맛)', price: 4000, tag: 'TOAST' },
-      { id: 'mozza-galbi-spicy', category: 'toast', name: '모짜갈비(매운맛)', price: 4000, tag: 'TOAST' },
-      { id: 'chili-bbq-pork', category: 'toast', name: '칠리바베큐삼겹', price: 4000, tag: 'TOAST' },
-      { id: 'spicy-chili-bbq-pork', category: 'toast', name: '매운칠리바베큐삼겹', price: 4000, tag: 'TOAST' },
-      { id: 'french-toast', category: 'toast', name: '프렌치 토스트(4조각)', price: 2500, tag: 'TOAST' },
+      {
+        id: 'mozza-galbi',
+        category: 'toast',
+        name: '모짜갈비',
+        choices: [
+          { id: 'mild', label: '순한맛', price: 4000 },
+          { id: 'spicy', label: '매운맛', price: 4000 }
+        ],
+        choicePrompt: '순한맛 또는 매운맛을 선택해 주세요',
+        tag: '맛 선택'
+      },
+      { id: 'french-toast', category: 'toast', name: '프렌치 토스트 4조각(옛날계란설탕토스트)', price: 2000, tag: 'TOAST' },
       { id: 'strawberry-jam-toast', category: 'toast', name: '딸기잼 토스트', price: 1500, tag: 'TOAST' },
       { id: 'blueberry-jam-toast', category: 'toast', name: '블루베리잼 토스트', price: 1500, tag: 'TOAST' },
       { id: 'maple-jam-toast', category: 'toast', name: '메이플잼 토스트', price: 1500, tag: 'TOAST' },
 
-      { id: 'buldak', category: 'dessert', name: '불닭볶음면', price: 2000, tag: 'FOOD' },
-      { id: 'buljja', category: 'dessert', name: '불짜면(불닭+짜파게티)', price: 2000, tag: 'FOOD' },
-      { id: 'squid-cup', category: 'dessert', name: '컵라면-오징어짬뽕', price: 2000, tag: 'FOOD' },
-      { id: 'jin-cup', category: 'dessert', name: '컵라면-진라면', price: 2000, tag: 'FOOD' },
-      { id: 'shin-cup', category: 'dessert', name: '컵라면-신라면', price: 2000, tag: 'FOOD' },
+      {
+        id: 'jjapagetti',
+        category: 'dessert',
+        name: '짜파게티',
+        price: 3000,
+        addOns: [
+          { id: 'egg', label: '계란추가', price: 500 },
+          { id: 'cheese', label: '치즈추가', price: 500 }
+        ],
+        tag: 'FOOD'
+      },
+      { id: 'small-cup-ramen', category: 'dessert', name: '컵라면(소)', price: 1500, tag: 'FOOD' },
+      {
+        id: 'ramen',
+        category: 'dessert',
+        name: '라면',
+        price: 3000,
+        addOns: [
+          { id: 'egg', label: '계란추가', price: 500 },
+          { id: 'cheese', label: '치즈추가', price: 500 }
+        ],
+        tag: 'FOOD'
+      },
+      {
+        id: 'ramen-set',
+        category: 'dessert',
+        name: '라면정식(라면&밥)',
+        price: 4000,
+        addOns: [
+          { id: 'egg', label: '계란추가', price: 500 },
+          { id: 'cheese', label: '치즈추가', price: 500 }
+        ],
+        tag: 'FOOD'
+      },
       { id: 'eggs', category: 'dessert', name: '계란 5알', price: 3000, tag: 'FOOD' },
-      { id: 'dumplings', category: 'dessert', name: '군만두 8개', price: 2500, tag: 'FOOD' },
-      { id: 'tteokbokki', category: 'dessert', name: '떡볶이(1인분)', price: 2500, tag: 'FOOD' },
-      { id: 'misugaru', category: 'dessert', name: '미숫가루', price: 3500, tag: 'BENTO' }
+      { id: 'dumplings', category: 'dessert', name: '군만두 8개', price: 3000, tag: 'FOOD' },
+      { id: 'tteokbokki', category: 'dessert', name: '떡볶이(1인분)', price: 2500, tag: 'FOOD' }
     ];
 
-    const state = { category: 'all', building: '르네관', cart: new Map(), storeOpen: true };
+    const state = {
+      category: 'all',
+      building: '르네관',
+      cart: new Map(),
+      addOnSelections: new Map(),
+      storeOpen: true
+    };
     const menuGrid = document.getElementById('menuGrid');
     const cartList = document.getElementById('cartList');
     const orderCount = document.getElementById('orderCount');
@@ -1133,6 +1193,7 @@
       { id: 'dessert', label: '분식' },
       { id: 'smoothie', label: '스무디' },
       { id: 'drink', label: '주스·에이드' },
+      { id: 'fresh', label: '생과일주스' },
       { id: 'tea', label: '허브티' }
     ];
 
@@ -1142,15 +1203,37 @@
             <button class="temperature-btn" type="button" data-id="${item.id}" data-temperature="HOT"><span class="temp-check">□</span> HOT ${won(item.temperatures.HOT)}</button>
             <button class="temperature-btn ice" type="button" data-id="${item.id}" data-temperature="ICE"><span class="temp-check">□</span> ICE ${won(item.temperatures.ICE)}</button>
           </span>` : '';
-        const displayPrice = item.temperatures ? Math.min(...Object.values(item.temperatures)) : item.price;
+        const choiceButtons = item.choices ? `
+          <span class="temperature-options" aria-label="${item.name} 맛 선택">
+            ${item.choices.map(choice => `
+              <button class="temperature-btn" type="button" data-id="${item.id}" data-choice="${choice.id}">
+                <span class="temp-check">□</span> ${choice.label} ${won(choice.price)}
+              </button>
+            `).join('')}
+          </span>` : '';
+        const addOnButtons = item.addOns ? `
+          <span class="option-base-price">기본 ${won(item.price)}</span>
+          <span class="temperature-options" aria-label="${item.name} 추가 옵션 선택">
+            ${item.addOns.map(addOn => `
+              <button class="temperature-btn" type="button" data-id="${item.id}" data-addon="${addOn.id}">
+                <span class="temp-check">□</span> ${addOn.label} +${won(addOn.price)}
+              </button>
+            `).join('')}
+          </span>` : '';
+        const optionControls = temperatureButtons || choiceButtons || addOnButtons;
+        const displayPrice = item.temperatures
+          ? Math.min(...Object.values(item.temperatures))
+          : item.choices
+            ? Math.min(...item.choices.map(choice => choice.price))
+            : item.price;
         return `
-        <article class="menu-card ${item.temperatures ? 'temperature-card' : ''}" data-id="${item.id}" tabindex="0" role="button" aria-label="${item.name} 선택 또는 취소">
+        <article class="menu-card ${optionControls ? 'temperature-card' : ''}" data-id="${item.id}" tabindex="0" role="button" aria-label="${item.name} 선택 또는 취소">
           <button class="menu-cancel-btn" type="button" data-cancel-menu="${item.id}" aria-label="${item.name} 선택 취소">×</button>
           <span class="card-top">
             <span class="menu-name">${item.name}</span>
             <span class="menu-tag ${tagClass(item.tag)}">${item.tag}</span>
           </span>
-          ${temperatureButtons || `<span class="card-bottom">
+          ${optionControls || `<span class="card-bottom">
             <strong class="menu-price">${won(displayPrice)}</strong>
             <span class="add-symbol" aria-hidden="true">+</span>
           </span>`}
@@ -1182,7 +1265,109 @@
           const check = button.querySelector('.temp-check');
           if (check) check.textContent = isSelected ? '☑' : '□';
         });
+        card.querySelectorAll('[data-choice]').forEach(button => {
+          const cartId = `${id}-${button.dataset.choice}`;
+          const isSelected = state.cart.has(cartId);
+          button.classList.toggle('selected', isSelected);
+          const check = button.querySelector('.temp-check');
+          if (check) check.textContent = isSelected ? '☑' : '□';
+        });
+        const addOnSelections = state.addOnSelections.get(id) || new Set();
+        card.querySelectorAll('[data-addon]').forEach(button => {
+          const isSelected = addOnSelections.has(button.dataset.addon);
+          button.classList.toggle('selected', isSelected);
+          const check = button.querySelector('.temp-check');
+          if (check) check.textContent = isSelected ? '☑' : '□';
+        });
       });
+    }
+
+    function removeItemsByBaseId(id) {
+      let existing;
+      [...state.cart.entries()].forEach(([key, value]) => {
+        if (value.baseId === id) {
+          if (!existing) existing = value;
+          state.cart.delete(key);
+        }
+      });
+      return existing;
+    }
+
+    function buildAddOnCartItem(item, selections, qty = 1) {
+      const selectedAddOns = item.addOns.filter(addOn => selections.has(addOn.id));
+      const suffix = selectedAddOns.length ? ` (${selectedAddOns.map(addOn => addOn.label).join(', ')})` : '';
+      const addOnPrice = selectedAddOns.reduce((sum, addOn) => sum + addOn.price, 0);
+      const optionKey = selectedAddOns.map(addOn => addOn.id).sort().join('-') || 'base';
+      return {
+        ...item,
+        baseId: item.id,
+        id: `${item.id}-${optionKey}`,
+        name: item.name + suffix,
+        price: item.price + addOnPrice,
+        selectedAddOns: selectedAddOns.map(addOn => addOn.id),
+        qty
+      };
+    }
+
+    function addChoiceItem(id, card, choiceId) {
+      if (!state.storeOpen) {
+        showClosedPopup();
+        return;
+      }
+      const item = MENU.find(menu => menu.id === id);
+      const choice = item && item.choices && item.choices.find(option => option.id === choiceId);
+      if (!item || !choice) return;
+      const cartId = `${id}-${choice.id}`;
+      const name = `${item.name} ${choice.label}`;
+      orderCompletePanel.hidden = true;
+      if (state.cart.has(cartId)) {
+        state.cart.delete(cartId);
+        showToast(name + ' 선택 취소');
+        renderCart();
+        return;
+      }
+      removeItemsByBaseId(id);
+      state.cart.set(cartId, {
+        ...item,
+        baseId: id,
+        id: cartId,
+        name,
+        price: choice.price,
+        choice: choice.label,
+        qty: 1
+      });
+      if (card) {
+        card.classList.remove('added');
+        void card.offsetWidth;
+        card.classList.add('added');
+      }
+      showToast(name + ' 추가');
+      renderCart();
+    }
+
+    function toggleAddOn(id, addOnId, card) {
+      if (!state.storeOpen) {
+        showClosedPopup();
+        return;
+      }
+      const item = MENU.find(menu => menu.id === id);
+      const addOn = item && item.addOns && item.addOns.find(option => option.id === addOnId);
+      if (!item || !addOn) return;
+      const selections = new Set(state.addOnSelections.get(id) || []);
+      if (selections.has(addOnId)) selections.delete(addOnId);
+      else selections.add(addOnId);
+      state.addOnSelections.set(id, selections);
+      const existing = removeItemsByBaseId(id);
+      const cartItem = buildAddOnCartItem(item, selections, existing ? existing.qty : 1);
+      state.cart.set(cartItem.id, cartItem);
+      orderCompletePanel.hidden = true;
+      if (card) {
+        card.classList.remove('added');
+        void card.offsetWidth;
+        card.classList.add('added');
+      }
+      showToast(`${addOn.label} ${selections.has(addOnId) ? '추가' : '취소'}`);
+      renderCart();
     }
 
     function addItem(id, card, temperature = '') {
@@ -1194,6 +1379,31 @@
       if (!item) return;
       if (item.temperatures && !temperature) {
         showToast('ICE 또는 HOT을 선택해 주세요');
+        return;
+      }
+      if (item.choices) {
+        showToast(item.choicePrompt || '옵션을 선택해 주세요');
+        return;
+      }
+      if (item.addOns) {
+        const existing = removeItemsByBaseId(id);
+        if (existing) {
+          state.addOnSelections.delete(id);
+          showToast(item.name + ' 선택 취소');
+          renderCart();
+          return;
+        }
+        const selections = new Set(state.addOnSelections.get(id) || []);
+        const cartItem = buildAddOnCartItem(item, selections);
+        state.cart.set(cartItem.id, cartItem);
+        orderCompletePanel.hidden = true;
+        if (card) {
+          card.classList.remove('added');
+          void card.offsetWidth;
+          card.classList.add('added');
+        }
+        showToast(cartItem.name + ' 추가');
+        renderCart();
         return;
       }
       const cartId = temperature ? `${id}-${temperature.toLowerCase()}` : id;
@@ -1231,6 +1441,7 @@
         }
       });
       if (removed) {
+        state.addOnSelections.delete(id);
         const item = MENU.find(menu => menu.id === id);
         showToast((item ? item.name : '메뉴') + ' 선택 취소');
         renderCart();
@@ -1241,7 +1452,10 @@
       const item = state.cart.get(id);
       if (!item) return;
       const next = item.qty + amount;
-      if (next <= 0) state.cart.delete(id);
+      if (next <= 0) {
+        state.cart.delete(id);
+        state.addOnSelections.delete(item.baseId);
+      }
       else state.cart.set(id, { ...item, qty: next });
       renderCart();
     }
@@ -1472,6 +1686,16 @@
         addItem(temperatureButton.dataset.id, temperatureButton.closest('.menu-card'), temperatureButton.dataset.temperature);
         return;
       }
+      const choiceButton = event.target.closest('[data-choice]');
+      if (choiceButton) {
+        addChoiceItem(choiceButton.dataset.id, choiceButton.closest('.menu-card'), choiceButton.dataset.choice);
+        return;
+      }
+      const addOnButton = event.target.closest('[data-addon]');
+      if (addOnButton) {
+        toggleAddOn(addOnButton.dataset.id, addOnButton.dataset.addon, addOnButton.closest('.menu-card'));
+        return;
+      }
       const card = event.target.closest('.menu-card');
       if (card) addItem(card.dataset.id, card);
     });
@@ -1501,11 +1725,17 @@
       const { action, id } = button.dataset;
       if (action === 'minus') changeQty(id, -1);
       if (action === 'plus') changeQty(id, 1);
-      if (action === 'delete') { state.cart.delete(id); renderCart(); }
+      if (action === 'delete') {
+        const removed = state.cart.get(id);
+        state.cart.delete(id);
+        if (removed) state.addOnSelections.delete(removed.baseId);
+        renderCart();
+      }
     });
 
     clearCart.addEventListener('click', () => {
       state.cart.clear();
+      state.addOnSelections.clear();
       renderCart();
       showToast('주문 내역을 비웠습니다');
     });
@@ -1535,6 +1765,7 @@
         showOrderCompletion(payload);
         startWaitPolling(result && result.id);
         state.cart.clear();
+        state.addOnSelections.clear();
         renderCart();
       } catch (error) {
         if (error && error.code === 'STORE_CLOSED') showToast('오늘 영업이 마감되었습니다');
